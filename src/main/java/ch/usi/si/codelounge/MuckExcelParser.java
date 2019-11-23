@@ -90,8 +90,6 @@ public class MuckExcelParser {
                 for (ParserCell pc : rangeDependentCells) {
                     addNotVisitedCell(pc);
                 }
-
-
             }
 
             else if (isSingleRef(ptg[i]) || isRefWithSheet(ptg[i])) {
@@ -213,46 +211,50 @@ public class MuckExcelParser {
         }
 
         Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
-        String sheetName = "";
-        if (cmd.hasOption("s")) {
-            System.out.println("sheet name passed: " + cmd.getOptionValue("s"));
-            sheetName = cmd.getOptionValue("s");
+
+
+            String sheetName = "";
+            if (cmd.hasOption("s")) {
+                System.out.println("sheet name passed: " + cmd.getOptionValue("s"));
+                sheetName = cmd.getOptionValue("s");
+            }
+
+            // Getting the Sheet by its name
+            Sheet sheet = workbook.getSheet(sheetName);
+
+            String cellName = "";
+            if (cmd.hasOption("c")) {
+                System.out.println("cell name passed: " + cmd.getOptionValue("c"));
+                cellName = cmd.getOptionValue("c");
+            }
+
+
+            // Retrieving the number of sheets in the Workbook
+            System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+
+            System.out.println("Retrieving Sheets using for-each loop");
+            for (Sheet sheets : workbook) {
+                System.out.println("=> " + sheets.getSheetName());
+            }
+
+
+            ParserCell initialCell = new ParserCell(cellName, sheet.getSheetName());
+            addNotVisitedCell(initialCell);
+            System.out.println("Starting cell name " + initialCell.toString());
+
+
+            /**
+             * Starting from the given cell (e.g "A")
+             * start traversing all the cells that
+             * cell A depends on.
+             *
+             */
+            while (!notVisited.isEmpty()) {
+                ParserCell parserCell = notVisited.get(notVisited.size() - 1);
+                traverseCell(workbook, parserCell);
+                notVisited.remove(parserCell);
+            }
+
+//          TODO:  workbook.close(); should be called?? but modifies file somehow..
         }
-
-        // Getting the Sheet by its name
-        Sheet sheet = workbook.getSheet(sheetName);
-
-        String cellName = "";
-        if (cmd.hasOption("c")) {
-            System.out.println("cell name passed: " + cmd.getOptionValue("c"));
-            cellName = cmd.getOptionValue("c");
-        }
-
-
-        // Retrieving the number of sheets in the Workbook
-        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
-
-        System.out.println("Retrieving Sheets using for-each loop");
-        for (Sheet sheets : workbook) {
-            System.out.println("=> " + sheets.getSheetName());
-        }
-
-
-        ParserCell initialCell = new ParserCell(cellName, sheet.getSheetName());
-        addNotVisitedCell(initialCell);
-        System.out.println("Starting cell name " + initialCell.toString());
-
-
-        /**
-         * Starting from the given cell (e.g "A")
-         * start traversing all the cells that
-         * cell A depends on.
-         *
-         */
-        while (!notVisited.isEmpty()) {
-            ParserCell parserCell = notVisited.get(notVisited.size() - 1);
-            traverseCell(workbook, parserCell);
-            notVisited.remove(parserCell);
-        }
-    }
 }

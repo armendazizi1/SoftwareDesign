@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 public class IOTestHelper {
-    private final InputStream systemIn = System.in;
     private final PrintStream systemOut = System.out;
 
     private ByteArrayInputStream testIn;
@@ -18,17 +17,15 @@ public class IOTestHelper {
     }
 
     public void restoreSystemInputOutput() {
-        System.setIn(systemIn);
         System.setOut(systemOut);
     }
 
-    private String getOutput() {
-        return testOut.toString();
-    }
+    public String getOutput() {
+        try {
+            return testOut.toString();
+        } finally {
+            restoreSystemInputOutput();
+        }
 
-    private void provideInput(String data) {
-        testIn = new ByteArrayInputStream(data.getBytes());
-        System.setIn(testIn);
     }
-
 }
