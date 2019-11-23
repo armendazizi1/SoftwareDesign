@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class MuckExcelParserTests {
 
     private IOTestHelper ioTestHelper;
@@ -20,7 +22,7 @@ public class MuckExcelParserTests {
 
     @Test
     public void shouldOutputValuesWhenSheetContainsValues() {
-
+        assertThat(true).isTrue();
 //        MuckExcelParser.main();
     }
 
