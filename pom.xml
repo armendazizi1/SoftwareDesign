@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.usi.si.codelounge</groupId>
-    <artifactId>muck</artifactId>
+    <artifactId>excel-parser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Muck CLI</name>
+    <name>Excel Parser</name>
     <url>http://maven.apache.org</url>
     <properties>
         <java.version>1.8</java.version>
