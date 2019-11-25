@@ -15,6 +15,8 @@ import org.apache.poi.ss.formula.FormulaParsingWorkbook;
 import org.apache.poi.ss.formula.FormulaType;
 import org.apache.poi.ss.formula.ptg.AreaPtg;
 import org.apache.poi.ss.formula.ptg.Ptg;
+import org.apache.poi.ss.formula.ptg.Ref3DPxg;
+import org.apache.poi.ss.formula.ptg.RefPtg;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFEvaluationWorkbook;
@@ -125,21 +127,19 @@ public class ExcelParser {
 
     // Check if token takes in a String representation of a cell reference
     public static boolean isSingleRef(Ptg ptg) {
-
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.RefPtg.class;
+        return ptg instanceof RefPtg;
     }
 
 
     // Check if token defines a cell in an external or different sheet.
     public static boolean isRefWithSheet(Ptg ptg) {
-
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class;
+        return ptg instanceof Ref3DPxg;
     }
 
 
     // Check if token contains structured reference. e.g SUM(A1:B4)
     public static boolean isRangeRef(Ptg ptg) {
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.AreaPtg.class;
+        return ptg instanceof  AreaPtg;
     }
 
 
