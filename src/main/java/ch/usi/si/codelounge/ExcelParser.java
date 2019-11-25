@@ -56,26 +56,22 @@ public class ExcelParser {
      */
 
     public static void traverseCell(Workbook workbook, ParserCell parserCell) {
-
        // Create a cell ref from a string representation.
         CellReference cellReference = new CellReference(parserCell.getCellName());
         Sheet sheet = workbook.getSheet(parserCell.getSheetName());
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
 
-
         visited.add(parserCell);
-
 
         System.out.println((cellOutputCounter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
 
-        if (!(cell.getCellType() == Cell.CELL_TYPE_FORMULA)) {
+        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
             return;
         }
 
-
         /**
-         * This class parses a formula string into a
+         * The FormulaParsingWorkbook class parses a formula string into a
          * List of tokens in RPN order.
          *
          */
@@ -84,35 +80,43 @@ public class ExcelParser {
 
         // Parse a formula into an array of tokens
         final int sheetIndex = 0;
-        Ptg[] ptg = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, sheetIndex);
+        Ptg[] ptgs = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, sheetIndex);
 
-
-        for (int i = 0; i < ptg.length; i++) {
-            if (isRangeRef(ptg[i])) {
-                List<ParserCell> rangeDependentCells = parseCellRange(sheet, (AreaPtg) ptg[i]);
-                for (ParserCell pc : rangeDependentCells) {
-                    addNotVisitedCell(pc);
-//                    rangeDependentCells.forEach(ExcelParser::addNotVisitedCell);
-                }
+        for (Ptg value : ptgs) {
+            if (isRangeRef(value)) {
+                addRangedependantCells(sheet, (AreaPtg) value);
+                continue;
             }
 
-            else if (isSingleRef(ptg[i])|| isRefWithSheet(ptg[i])) {
-                if (isRefWithSheet(ptg[i])) {
-                    StringTokenizer tokenizer = new StringTokenizer(ptg[i].toFormulaString(), "!");
-                    String sheetName = tokenizer.nextToken();
-                    String cellName = tokenizer.nextToken();
-                    if (sheetName.charAt(0) == '\'') {
-                        sheetName = sheetName.substring(1, sheetName.length() - 1);
-                    }
-                    addNotVisitedCell(new ParserCell(cellName, sheetName));
-                } else {
-                    addNotVisitedCell(new ParserCell(ptg[i].toFormulaString(), sheet.getSheetName()));
-                }
+            if (isRefWithSheet(value)) {
+                addRefCells(value);
+                continue;
+            }
+
+            if (isSingleRef(value)) {
+                addSingleRef(value.toFormulaString(), sheet.getSheetName());
             }
         }
     }
 
+    private static void addSingleRef(String s, String sheetName) {
+        addNotVisitedCell(new ParserCell(s, sheetName));
+    }
 
+    private static void addRefCells(Ptg value) {
+        StringTokenizer tokenizer = new StringTokenizer(value.toFormulaString(), "!");
+        String sheetName = tokenizer.nextToken();
+        String cellName = tokenizer.nextToken();
+        if (sheetName.charAt(0) == '\'') {
+            sheetName = sheetName.substring(1, sheetName.length() - 1);
+        }
+        addSingleRef(cellName, sheetName);
+    }
+
+    private static void addRangedependantCells(Sheet sheet, AreaPtg value) {
+        List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
+        rangeDependentCells.forEach(ExcelParser::addNotVisitedCell);
+    }
 
 
     /**
