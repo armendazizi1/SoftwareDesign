@@ -84,7 +84,7 @@ public class ExcelParser {
 
 
         for (int i = 0; i < ptg.length; i++) {
-            if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.AreaPtg.class) {
+            if (isRangeRef(ptg[i])) {
                 List<ParserCell> rangeDependentCells = parseCellRange(sheet, (AreaPtg) ptg[i]);
                 for (ParserCell pc : rangeDependentCells) {
                     addNotVisitedCell(pc);
@@ -92,8 +92,8 @@ public class ExcelParser {
                 }
             }
 
-            else if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.RefPtg.class || ptg[i].getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class) {
-                if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class) {
+            else if (isSingleRef(ptg[i])|| isRefWithSheet(ptg[i])) {
+                if (isRefWithSheet(ptg[i])) {
                     StringTokenizer st1 = new StringTokenizer(ptg[i].toFormulaString(), "!");
                     String s1 = st1.nextToken();
                     String c1 = st1.nextToken();
@@ -120,6 +120,26 @@ public class ExcelParser {
         if (!visited.contains(cell) && !notVisited.contains(cell)) {
             notVisited.add(cell);
         }
+    }
+
+
+    // Check if token takes in a String representation of a cell reference
+    public static boolean isSingleRef(Ptg ptg) {
+
+        return ptg.getClass() == org.apache.poi.ss.formula.ptg.RefPtg.class;
+    }
+
+
+    // Check if token defines a cell in an external or different sheet.
+    public static boolean isRefWithSheet(Ptg ptg) {
+
+        return ptg.getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class;
+    }
+
+
+    // Check if token contains structured reference. e.g SUM(A1:B4)
+    public static boolean isRangeRef(Ptg ptg) {
+        return ptg.getClass() == org.apache.poi.ss.formula.ptg.AreaPtg.class;
     }
 
 
