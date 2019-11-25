@@ -37,12 +37,12 @@ class ParserCell {
         return getSheetName().equals(that.getSheetName());
     }
 
-    @Override
-    public int hashCode() {
-        int result = getCellName().hashCode();
-        result = 31 * result + getSheetName().hashCode();
-        return result;
-    }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = getCellName().hashCode();
+            return prime * result + getSheetName().hashCode();
+        }
 
     @Override
     public String toString() {

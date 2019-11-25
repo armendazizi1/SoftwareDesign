@@ -1,12 +1,6 @@
 package ch.usi.si.codelounge;
 
 
-
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.commons.cli.*;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -21,6 +15,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFEvaluationWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * The ExcelParser program implements an application that
@@ -82,7 +80,8 @@ public class ExcelParser {
         fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
 
         // Parse a formula into an array of tokens
-        Ptg[] ptg = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, 0);
+        final int sheetIndex = 0;
+        Ptg[] ptg = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, sheetIndex);
 
 
         for (int i = 0; i < ptg.length; i++) {
@@ -126,19 +125,19 @@ public class ExcelParser {
 
 
     // Check if token takes in a String representation of a cell reference
-    public static boolean isSingleRef(Ptg ptg) {
+    private static boolean isSingleRef(Ptg ptg) {
         return ptg instanceof RefPtg;
     }
 
 
     // Check if token defines a cell in an external or different sheet.
-    public static boolean isRefWithSheet(Ptg ptg) {
+    private static boolean isRefWithSheet(Ptg ptg) {
         return ptg instanceof Ref3DPxg;
     }
 
 
     // Check if token contains structured reference. e.g SUM(A1:B4)
-    public static boolean isRangeRef(Ptg ptg) {
+    private static boolean isRangeRef(Ptg ptg) {
         return ptg instanceof  AreaPtg;
     }
 
@@ -158,11 +157,8 @@ public class ExcelParser {
 
         for (int r = region.getFirstRow(); r <= region.getLastRow(); r++) {
             Row ro = sheet.getRow(r);
-            Cell regionCell = null;
             for (int c = region.getFirstColumn(); c <= region.getLastColumn(); c++) {
-                if (ro.getCell(c)!= null) {
-                    regionCell = ro.getCell(c);
-                }
+                Cell regionCell = ro.getCell(c);
                 ParserCell parserCell = new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName());
                 cells.add(parserCell);
             }
