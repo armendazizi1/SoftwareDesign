@@ -32,7 +32,10 @@ import java.util.*;
 
 public class ExcelParser {
 
-    public static int counter = 1;
+    /**
+     * counts the number of cells traversed
+     */
+    public static int cellOutputCounter = 1;
 
     /**
      * The program traverses a cell only once,
@@ -64,7 +67,7 @@ public class ExcelParser {
         visited.add(parserCell);
 
 
-        System.out.println((counter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
+        System.out.println((cellOutputCounter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
 
         if (!(cell.getCellType() == Cell.CELL_TYPE_FORMULA)) {
             return;
@@ -95,13 +98,13 @@ public class ExcelParser {
 
             else if (isSingleRef(ptg[i])|| isRefWithSheet(ptg[i])) {
                 if (isRefWithSheet(ptg[i])) {
-                    StringTokenizer st1 = new StringTokenizer(ptg[i].toFormulaString(), "!");
-                    String s1 = st1.nextToken();
-                    String c1 = st1.nextToken();
-                    if (s1.charAt(0) == '\'') {
-                        s1 = s1.substring(1, s1.length() - 1);
+                    StringTokenizer tokenizer = new StringTokenizer(ptg[i].toFormulaString(), "!");
+                    String sheetName = tokenizer.nextToken();
+                    String cellName = tokenizer.nextToken();
+                    if (sheetName.charAt(0) == '\'') {
+                        sheetName = sheetName.substring(1, sheetName.length() - 1);
                     }
-                    addNotVisitedCell(new ParserCell(c1, s1));
+                    addNotVisitedCell(new ParserCell(cellName, sheetName));
                 } else {
                     addNotVisitedCell(new ParserCell(ptg[i].toFormulaString(), sheet.getSheetName()));
                 }
@@ -180,7 +183,7 @@ public class ExcelParser {
 
     public static void main(String[] args) throws ParseException, IOException, InvalidFormatException {
 
-        String SAMPLE_XLSX_FILE_PATH = "";
+        String excelFilePath = "";
 
 
         //***Definition Stage***
@@ -203,10 +206,10 @@ public class ExcelParser {
 
         if (cmd.hasOption("f")) {
             System.out.println("file path passed: " + cmd.getOptionValue("f"));
-            SAMPLE_XLSX_FILE_PATH = cmd.getOptionValue("f");
+            excelFilePath = cmd.getOptionValue("f");
         }
 
-        Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
+        Workbook workbook = WorkbookFactory.create(new File(excelFilePath));
 
 
             String sheetName = "";
