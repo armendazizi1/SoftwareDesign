@@ -84,24 +84,22 @@ public class MuckExcelParser {
 
 
         for (int i = 0; i < ptg.length; i++) {
-            if (isRangeRef(ptg[i])) {
-
+            if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.AreaPtg.class) {
                 List<ParserCell> rangeDependentCells = parseCellRange(sheet, (AreaPtg) ptg[i]);
                 for (ParserCell pc : rangeDependentCells) {
                     addNotVisitedCell(pc);
                 }
             }
 
-            else if (isSingleRef(ptg[i]) || isRefWithSheet(ptg[i])) {
-                if (isRefWithSheet(ptg[i])) {
+            else if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.RefPtg.class || ptg[i].getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class) {
+                if (ptg[i].getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class) {
                     StringTokenizer st1 = new StringTokenizer(ptg[i].toFormulaString(), "!");
-                    String sheetName = st1.nextToken();
-                    String cellsName = st1.nextToken();
-
-                    if (sheetName.charAt(0) == '\'') {
-                        sheetName = sheetName.substring(1, sheetName.length() - 1);
+                    String s1 = st1.nextToken();
+                    String c1 = st1.nextToken();
+                    if (s1.charAt(0) == '\'') {
+                        s1 = s1.substring(1, s1.length() - 1);
                     }
-                    addNotVisitedCell(new ParserCell(cellsName, sheetName));
+                    addNotVisitedCell(new ParserCell(c1, s1));
                 } else {
                     addNotVisitedCell(new ParserCell(ptg[i].toFormulaString(), sheet.getSheetName()));
                 }
@@ -139,9 +137,11 @@ public class MuckExcelParser {
 
         for (int r = region.getFirstRow(); r <= region.getLastRow(); r++) {
             Row ro = sheet.getRow(r);
-            //System.out.println(ro);
+            Cell regionCell = null;
             for (int c = region.getFirstColumn(); c <= region.getLastColumn(); c++) {
-                Cell regionCell = ro.getCell(c);
+                if (ro.getCell(c)!= null) {
+                    regionCell = ro.getCell(c);
+                }
                 ParserCell parserCell = new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName());
                 cells.add(parserCell);
             }
@@ -149,27 +149,6 @@ public class MuckExcelParser {
 
         return cells;
     }
-
-
-    // Check if token takes in a String representation of a cell reference
-    public static boolean isSingleRef(Ptg ptg) {
-
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.RefPtg.class;
-    }
-
-
-    // Check if token defines a cell in an external or different sheet.
-    public static boolean isRefWithSheet(Ptg ptg) {
-
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.Ref3DPxg.class;
-    }
-
-
-    // Check if token contains structured reference. e.g SUM(A1:B4)
-    public static boolean isRangeRef(Ptg ptg) {
-        return ptg.getClass() == org.apache.poi.ss.formula.ptg.AreaPtg.class;
-    }
-
 
 
     /**
@@ -193,9 +172,9 @@ public class MuckExcelParser {
         Options gnuOptions = new Options();
 
 
-        gnuOptions.addOption("f", "filepath", true, "Path of the excel file")
-                .addOption("s", "sheetname", true, "Name of the sheet(surround by single-quotes)")
-                .addOption("c", "cellname", true, "Name of the cell");
+        gnuOptions.addOption("f", "filepath", true, "Path of the excel file");
+        gnuOptions.addOption("s", "sheetname", true, "Name of the sheet(surround by single-quotes)");
+        gnuOptions.addOption("c", "cellname", true, "Name of the cell");
 
         CommandLineParser gnuParser = new GnuParser();
         CommandLine cmd = gnuParser.parse(gnuOptions, args);
@@ -240,6 +219,8 @@ public class MuckExcelParser {
 
             ParserCell initialCell = new ParserCell(cellName, sheet.getSheetName());
             addNotVisitedCell(initialCell);
+
+
             System.out.println("Starting cell name " + initialCell.toString());
 
 
