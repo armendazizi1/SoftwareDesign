@@ -88,6 +88,7 @@ public class ExcelParser {
                 List<ParserCell> rangeDependentCells = parseCellRange(sheet, (AreaPtg) ptg[i]);
                 for (ParserCell pc : rangeDependentCells) {
                     addNotVisitedCell(pc);
+//                    rangeDependentCells.forEach(ExcelParser::addNotVisitedCell);
                 }
             }
 
