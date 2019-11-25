@@ -21,7 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFEvaluationWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * The MuckExcelParser program implements an application that
+ * The ExcelParser program implements an application that
  * given a cell of an excel sheet traverses the whole cell tree
  * and outputs the content of the cells it found.
  *
@@ -30,7 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @since   December 2018
  */
 
-public class MuckExcelParser {
+public class ExcelParser {
 
     public static int counter = 1;
 
@@ -182,7 +182,7 @@ public class MuckExcelParser {
 
         // A formatter of help messages for command line options.
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("Muck", gnuOptions);
+        formatter.printHelp("ExcelParser", gnuOptions);
 
         if (cmd.hasOption("f")) {
             System.out.println("file path passed: " + cmd.getOptionValue("f"));
