@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MuckExcelParserTests {
+public class ExcelParserTests {
 
     private IOTestHelper ioTestHelper;
 
@@ -28,7 +28,7 @@ public class MuckExcelParserTests {
 //        String[] input = InputTestHelper.generate("C10");
 //
 //        // act
-//        MuckExcelParser.main(input);
+//        ExcelParser.main(input);
 //
 //        // assert
 //        assertThat(ioTestHelper.getOutput()).contains("C10= 1");
@@ -40,7 +40,7 @@ public class MuckExcelParserTests {
         String[] input = InputTestHelper.generate("F45");
 
         // act
-        MuckExcelParser.main(input);
+        ExcelParser.main(input);
 
         // assert
         assertThat(ioTestHelper.getOutput()).contains("F45= Total Returning Customers");
@@ -52,7 +52,7 @@ public class MuckExcelParserTests {
         String[] input = InputTestHelper.generate("Q42");
 
         // act
-        MuckExcelParser.main(input);
+        ExcelParser.main(input);
 
         // assert
         assertThat(ioTestHelper.getOutput()).contains("Q42= Q39+Q40+Q41");
@@ -64,7 +64,7 @@ public class MuckExcelParserTests {
         String[] input = InputTestHelper.generate("G35");
 
         // act
-        MuckExcelParser.main(input);
+        ExcelParser.main(input);
 
         // assert
         assertThat(ioTestHelper.getOutput()).contains("G35= SUM(G10:G34)");
@@ -76,7 +76,7 @@ public class MuckExcelParserTests {
         String[] input = InputTestHelper.generate("G10");
 
         // act
-        MuckExcelParser.main(input);
+        ExcelParser.main(input);
 
         // assert
         assertThat(ioTestHelper.getOutput()).contains("G10= IF(AND(G$8>=$C10,G$8<=$C10+$E10-1),$D10*$F10,0)");
@@ -88,7 +88,7 @@ public class MuckExcelParserTests {
         String[] input = InputTestHelper.generate("I39");
 
         // act
-        MuckExcelParser.main(input);
+        ExcelParser.main(input);
 
         // assert
         assertThat(ioTestHelper.getOutput()).contains("I39= H42");
