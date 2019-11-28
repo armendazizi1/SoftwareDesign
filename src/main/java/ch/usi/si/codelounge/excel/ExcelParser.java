@@ -174,34 +174,13 @@ public class ExcelParser {
         return cells;
     }
 
+    public void parse() {
 
-    /**
-     * This is the main method which makes use of traverseCell method.
-     * @param args and command options.
-     * @return Nothing.
-     * @exception IOException On input error
-     * @exception  ParseException
-     * @exception InvalidFormatException
-     * @see IOException
-     */
 
-    public static void main(String[] args) throws ParseException, IOException, InvalidFormatException {
+
 
         String excelFilePath = "";
 
-
-        //***Definition Stage***
-        // create Options object
-        //Create GNU like options
-        Options gnuOptions = new Options();
-
-
-        gnuOptions.addOption("f", "filepath", true, "Path of the excel file");
-        gnuOptions.addOption("s", "sheetname", true, "Name of the sheet(surround by single-quotes)");
-        gnuOptions.addOption("c", "cellname", true, "Name of the cell");
-
-        CommandLineParser gnuParser = new GnuParser();
-        CommandLine cmd = gnuParser.parse(gnuOptions, args);
 
 
         // A formatter of help messages for command line options.

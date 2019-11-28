@@ -32,5 +32,10 @@ public class ParsedLine {
         return cellName;
     }
 
-
+    @Override
+    public String toString() {
+        return "filepath: " + getFilepath() + System.lineSeparator() +
+            "sheetName: " + getSheetName() + System.lineSeparator() +
+            "cellName: " + getCellName() + System.lineSeparator();
+    }
 }
