@@ -113,7 +113,7 @@ public class ExcelParser {
      * only if it has not been visited before.
      */
     private void addNotVisitedCell(ParserCell cell) {
-        if (!visited.contains(cell) && !notVisited.contains(cell)) {
+        if (!visited.contains(cell)) {
             notVisited.add(cell);
         }
     }
