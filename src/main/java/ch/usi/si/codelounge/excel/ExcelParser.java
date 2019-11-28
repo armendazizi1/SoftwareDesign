@@ -43,8 +43,8 @@ public class ExcelParser {
     /**
      * The program traverses a cell only once, so we need to keep track which cell we have visited and not visited.
      */
-    private HashSet<ParserCell> notVisited = new LinkedHashSet<>();
-    private HashSet<ParserCell> visited = new LinkedHashSet<>();
+    private final HashSet<ParserCell> notVisited = new LinkedHashSet<>();
+    private final HashSet<ParserCell> visited = new LinkedHashSet<>();
 
     /**
      * This method is used to traverse a cell.
