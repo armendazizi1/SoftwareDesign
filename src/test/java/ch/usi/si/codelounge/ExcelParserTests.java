@@ -1,6 +1,5 @@
 package ch.usi.si.codelounge;
 
-import ch.usi.si.codelounge.excel.ExcelParser;
 import org.apache.commons.cli.ParseException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Before;
@@ -58,7 +57,8 @@ public class ExcelParserTests {
         // assert
         assertThat(ioTestHelper.getOutput()).contains("Q42= Q39+Q40+Q41");
     }
-//
+
+    //
     @Test
     public void shouldOutputFormula() throws ParseException, InvalidFormatException, IOException {
         // arrange

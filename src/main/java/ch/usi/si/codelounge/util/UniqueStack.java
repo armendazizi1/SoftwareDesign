@@ -5,24 +5,32 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
-/** adapted from https://github.com/stlanger/Docear/blob/master/freeplane_plugin_script/src/org/freeplane/plugin/script/UniqueStack.java
- A minimal implementation of a stack that may contain an element only once - not threadsafe.
- * The stack may contains null but note that null is used by {@link #pop()} to signal an empty stack. */
+/**
+ * adapted from https://github.com/stlanger/Docear/blob/master/freeplane_plugin_script/src/org/freeplane/plugin/script/UniqueStack.java
+ * A minimal implementation of a stack that may contain an element only once - not threadsafe.
+ * The stack may contains null but note that null is used by {@link #pop()} to signal an empty stack.
+ */
 public class UniqueStack<T> implements Iterable<T> {
 
     private ArrayList<T> stack = new ArrayList<T>();
     private HashSet<T> set = new HashSet<T>();
 
-    /** creates an empty stack. */
+    /**
+     * creates an empty stack.
+     */
     public UniqueStack() {
     }
 
-    /** initializes the stack with a single element. */
+    /**
+     * initializes the stack with a single element.
+     */
     public UniqueStack(T t) {
         push(t);
     }
 
-    /** returns true only if the element was actually added. */
+    /**
+     * returns true only if the element was actually added.
+     */
     public boolean push(T t) {
         if (set.add(t)) {
             stack.add(t);
@@ -31,7 +39,9 @@ public class UniqueStack<T> implements Iterable<T> {
         return false;
     }
 
-    /** returns the last element in the stack or null if it is empty. */
+    /**
+     * returns the last element in the stack or null if it is empty.
+     */
     public T pop() {
         if (stack.isEmpty()) {
             return null;

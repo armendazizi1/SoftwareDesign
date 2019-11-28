@@ -34,18 +34,16 @@ import java.util.stream.IntStream;
 
 public class ExcelParser {
 
-    private System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
-
-    /**
-     * counts the number of cells traversed
-     */
-    private int cellOutputCounter = 1;
-
     /**
      * The program traverses a cell only once, so we need to keep track which cell we have visited and not visited.
      */
     private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
     private final HashSet<ParserCell> visited = new LinkedHashSet<>(); // TODO: get rid of visited hashset
+    private System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+    /**
+     * counts the number of cells traversed
+     */
+    private int cellOutputCounter = 1;
 
     private int getAndIncrementCellOutputCounter() {
         int old = cellOutputCounter;
@@ -77,7 +75,7 @@ public class ExcelParser {
     }
 
     private void addReferences(Workbook workbook, Cell cell, Sheet sheet) {
-         // The FormulaParsingWorkbook class parses a formula string into a List of tokens in RPN order.
+        // The FormulaParsingWorkbook class parses a formula string into a List of tokens in RPN order.
         FormulaParsingWorkbook fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
 
         // Parse a formula into an array of tokens
@@ -157,10 +155,10 @@ public class ExcelParser {
 
         IntStream.rangeClosed(region.getFirstRow(), region.getLastRow())
             .mapToObj(sheet::getRow).forEach(ro -> {
-                IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
-                    .mapToObj(ro::getCell)
-                    .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
-                    .forEach(cells::add);
+            IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
+                .mapToObj(ro::getCell)
+                .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
+                .forEach(cells::add);
         });
 
         return cells;

@@ -4,8 +4,8 @@ package ch.usi.si.codelounge.excel;
  * The ParserCell class represents a cell
  * with its name and the name of the sheet
  *
- * @author  Gloria Sassone, Armend Azizi
- * @since   December 2018
+ * @author Gloria Sassone, Armend Azizi
+ * @since December 2018
  */
 
 class ParserCell {
@@ -37,18 +37,18 @@ class ParserCell {
         return getSheetName().equals(that.getSheetName());
     }
 
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = getCellName().hashCode();
-            return prime * result + getSheetName().hashCode();
-        }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = getCellName().hashCode();
+        return prime * result + getSheetName().hashCode();
+    }
 
     @Override
     public String toString() {
         return "ParserCell{" +
-                "cellName='" + cellName + '\'' +
-                ", sheetName='" + sheetName + '\'' +
-                '}';
+            "cellName='" + cellName + '\'' +
+            ", sheetName='" + sheetName + '\'' +
+            '}';
     }
 }

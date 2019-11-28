@@ -17,7 +17,7 @@ public class InputTestHelper {
     }
 
     /**
-     * @param cell     The name of the cell, e.g. A2
+     * @param cell The name of the cell, e.g. A2
      * @return The command line arguments to invoke the main() method
      */
     public static String[] generate(String cell) {
@@ -25,7 +25,7 @@ public class InputTestHelper {
     }
 
     /**
-     * @param cell     The name of the cell, e.g. A2
+     * @param cell The name of the cell, e.g. A2
      * @return The command line arguments to invoke the main() method
      */
     public static String[] generate(String filename, String cell) {

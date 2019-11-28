@@ -1,4 +1,5 @@
 package ch.usi.si.codelounge.commandline;
+
 import ch.usi.si.codelounge.util.StringUtil;
 
 public class ParsedLine {

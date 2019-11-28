@@ -1,7 +1,7 @@
 package ch.usi.si.codelounge.commandline;
 
-import org.apache.commons.cli.*;
 import ch.usi.si.codelounge.util.StringUtil;
+import org.apache.commons.cli.*;
 
 public class Parser {
 
