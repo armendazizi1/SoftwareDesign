@@ -41,13 +41,10 @@ public class ExcelParser {
     private int cellOutputCounter = 1;
 
     /**
-     * The program traverses a cell only once,
-     * so we need to keep track which cell
-     * we have visited and not visited.
+     * The program traverses a cell only once, so we need to keep track which cell we have visited and not visited.
      */
     private HashSet<ParserCell> notVisited = new LinkedHashSet<>();
     private HashSet<ParserCell> visited = new LinkedHashSet<>();
-
 
     /**
      * This method is used to traverse a cell.
@@ -55,7 +52,6 @@ public class ExcelParser {
      * @param workbook   This is the first parameter to traverseCell method
      * @param parserCell This is the second parameter to traverseCell method composed of a sheetName and cellName
      */
-
     private void traverseCell(Workbook workbook, ParserCell parserCell) {
         // Create a cell ref from a string representation.
         CellReference cellReference = new CellReference(parserCell.getCellName());
@@ -95,12 +91,17 @@ public class ExcelParser {
 
     private void addRefCells(Ptg value) {
         StringTokenizer tokenizer = new StringTokenizer(value.toFormulaString(), "!");
-        String sheetName = tokenizer.nextToken();
+        String sheetName = transformSheetName(tokenizer.nextToken());
         String cellName = tokenizer.nextToken();
-        if (sheetName.charAt(0) == '\'') {
-            sheetName = sheetName.substring(1, sheetName.length() - 1);
-        }
+
         addSingleRef(cellName, sheetName);
+    }
+
+    private String transformSheetName(String sheetName) {
+        if (sheetName.charAt(0) == '\'') {
+            return sheetName.substring(1, sheetName.length() - 1);
+        }
+        return sheetName;
     }
 
     private void addRangedCells(Sheet sheet, AreaPtg value) {
@@ -172,7 +173,6 @@ public class ExcelParser {
             traverseCell(workbook, cellToParse);
             notVisited.remove(cellToParse);
         }
-
     }
 
     private void printInfo(Workbook workbook, ParserCell initialCell) {

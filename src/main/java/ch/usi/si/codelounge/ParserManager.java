@@ -7,11 +7,11 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
 
-public class ParserManager {
+class ParserManager {
 
     private static System.Logger LOGGER = System.getLogger(ParserManager.class.getName());
 
-    public void parse(String[] commandlineArgs) {
+    void parse(String[] commandlineArgs) {
 
         Parser cmdParser = new Parser();
         ParsedLine line = cmdParser.parse(commandlineArgs);
