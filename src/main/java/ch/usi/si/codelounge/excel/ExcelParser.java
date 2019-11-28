@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * The ExcelParser program implements an application that
@@ -66,16 +67,15 @@ public class ExcelParser {
 
         visited.add(parserCell);
 
-        System.out.println((cellOutputCounter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
+        LOGGER.log(System.Logger.Level.INFO, (cellOutputCounter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
 
         if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
             return;
         }
 
-        /**
-         * The FormulaParsingWorkbook class parses a formula string into a
-         * List of tokens in RPN order.
-         *
+        /*
+          The FormulaParsingWorkbook class parses a formula string into a
+          List of tokens in RPN order.
          */
         final FormulaParsingWorkbook fpb;
         fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
@@ -120,7 +120,6 @@ public class ExcelParser {
         rangeDependentCells.forEach(this::addNotVisitedCell);
     }
 
-
     /**
      * Add cell to the not Visited list
      * only if it has not been visited before.
@@ -159,14 +158,12 @@ public class ExcelParser {
 
         CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
 
-        for (int r = region.getFirstRow(); r <= region.getLastRow(); r++) {
-            Row ro = sheet.getRow(r);
-            for (int c = region.getFirstColumn(); c <= region.getLastColumn(); c++) {
-                Cell regionCell = ro.getCell(c);
-                ParserCell parserCell = new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName());
-                cells.add(parserCell);
-            }
-        }
+         IntStream.rangeClosed(region.getFirstRow(), region.getLastRow()).mapToObj(sheet::getRow).forEach(ro -> {
+             IntStream stream = IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn());
+             stream.mapToObj(ro::getCell)
+                 .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
+                 .forEach(cells::add);
+         });
 
         return cells;
     }
@@ -184,9 +181,9 @@ public class ExcelParser {
             Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
         */
         while (!notVisited.isEmpty()) {
-            ParserCell parserCell = notVisited.get(notVisited.size() - 1);
-            traverseCell(workbook, parserCell);
-            notVisited.remove(parserCell);
+            ParserCell cellToParse = notVisited.get(notVisited.size() - 1);
+            traverseCell(workbook, cellToParse);
+            notVisited.remove(cellToParse);
         }
 
     }
