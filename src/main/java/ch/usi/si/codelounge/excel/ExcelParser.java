@@ -32,20 +32,20 @@ import java.util.*;
 
 public class ExcelParser {
 
-    private static System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+    private  System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
 
     /**
      * counts the number of cells traversed
      */
-    public static int cellOutputCounter = 1;
+    private int cellOutputCounter = 1;
 
     /**
      * The program traverses a cell only once,
      * so we need to keep track which cell
      * we have visited and not visited.
      */
-    private static ArrayList<ParserCell> notVisited = new ArrayList<>();
-    private static HashSet<ParserCell> visited = new LinkedHashSet<>();
+    private ArrayList<ParserCell> notVisited = new ArrayList<>();
+    private HashSet<ParserCell> visited = new LinkedHashSet<>();
 
 
     /**
@@ -57,7 +57,7 @@ public class ExcelParser {
      * @return Nothing.
      */
 
-    public static void traverseCell(Workbook workbook, ParserCell parserCell) {
+    private void traverseCell(Workbook workbook, ParserCell parserCell) {
         // Create a cell ref from a string representation.
         CellReference cellReference = new CellReference(parserCell.getCellName());
         Sheet sheet = workbook.getSheet(parserCell.getSheetName());
@@ -101,11 +101,11 @@ public class ExcelParser {
         }
     }
 
-    private static void addSingleRef(String s, String sheetName) {
+    private  void addSingleRef(String s, String sheetName) {
         addNotVisitedCell(new ParserCell(s, sheetName));
     }
 
-    private static void addRefCells(Ptg value) {
+    private  void addRefCells(Ptg value) {
         StringTokenizer tokenizer = new StringTokenizer(value.toFormulaString(), "!");
         String sheetName = tokenizer.nextToken();
         String cellName = tokenizer.nextToken();
@@ -115,9 +115,9 @@ public class ExcelParser {
         addSingleRef(cellName, sheetName);
     }
 
-    private static void addRangedCells(Sheet sheet, AreaPtg value) {
+    private  void addRangedCells(Sheet sheet, AreaPtg value) {
         List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
-        rangeDependentCells.forEach(ExcelParser::addNotVisitedCell);
+        rangeDependentCells.forEach(this::addNotVisitedCell);
     }
 
 
@@ -125,30 +125,26 @@ public class ExcelParser {
      * Add cell to the not Visited list
      * only if it has not been visited before.
      */
-    public static void addNotVisitedCell(ParserCell cell) {
+    private void addNotVisitedCell(ParserCell cell) {
         if (!visited.contains(cell) && !notVisited.contains(cell)) {
             notVisited.add(cell);
         }
     }
 
-
     // Check if token takes in a String representation of a cell reference
-    private static boolean isSingleRef(Ptg ptg) {
+    private  boolean isSingleRef(Ptg ptg) {
         return ptg instanceof RefPtg;
     }
 
-
     // Check if token defines a cell in an external or different sheet.
-    private static boolean isRefWithSheet(Ptg ptg) {
+    private  boolean isRefWithSheet(Ptg ptg) {
         return ptg instanceof Ref3DPxg;
     }
 
-
     // Check if token contains structured reference. e.g SUM(A1:B4)
-    private static boolean isRangeRef(Ptg ptg) {
+    private  boolean isRangeRef(Ptg ptg) {
         return ptg instanceof AreaPtg;
     }
-
 
     /**
      * This method is used to Parse a structured reference.
@@ -158,7 +154,7 @@ public class ExcelParser {
      * @return List of cells from the range.
      */
 
-    static List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
+     private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
         List<ParserCell> cells = new ArrayList<>();
 
         CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
