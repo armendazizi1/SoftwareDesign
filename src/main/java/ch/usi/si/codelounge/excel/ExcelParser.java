@@ -142,13 +142,14 @@ public class ExcelParser {
 
     private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
         List<ParserCell> cells = new ArrayList<>();
-
         CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
-        IntStream.rangeClosed(region.getFirstRow(), region.getLastRow()).mapToObj(sheet::getRow).forEach(ro -> {
-            IntStream stream = IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn());
-            stream.mapToObj(ro::getCell)
-                .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
-                .forEach(cells::add);
+
+        IntStream.rangeClosed(region.getFirstRow(), region.getLastRow())
+            .mapToObj(sheet::getRow).forEach(ro -> {
+                IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
+                    .mapToObj(ro::getCell)
+                    .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
+                    .forEach(cells::add);
         });
 
         return cells;
@@ -167,7 +168,7 @@ public class ExcelParser {
             Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
         */
         while (!notVisited.isEmpty()) {
-            ParserCell cellToParse = notVisited.get(notVisited.size() - 1);
+            ParserCell cellToParse = notVisited. get(notVisited.size() - 1);
             traverseCell(workbook, cellToParse);
             notVisited.remove(cellToParse);
         }
