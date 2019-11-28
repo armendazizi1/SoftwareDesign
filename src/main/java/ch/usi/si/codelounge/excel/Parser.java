@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
  * @version 1.0
  * @since December 2018
  */
-public class ExcelParser {
+public class Parser {
 
   /**
    * The program traverses a cell only once, so we need to keep track which cell we have visited and
@@ -44,7 +44,7 @@ public class ExcelParser {
 
   //  TODO: only java 9 :( can we upgrade?
   //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
-  private final Logger LOGGER = LogManager.getLogger(ExcelParser.class.getName());
+  private final Logger LOGGER = LogManager.getLogger(Parser.class.getName());
 
   // counts the number of cells traversed
   private int cellOutputCounter = 1;

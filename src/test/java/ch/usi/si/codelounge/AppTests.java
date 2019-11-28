@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ExcelParserTests {
+public class AppTests {
 
   private IOTestHelper ioTestHelper;
 

@@ -1,8 +1,7 @@
 package ch.usi.si.codelounge;
 
 import ch.usi.si.codelounge.commandline.ParsedLine;
-import ch.usi.si.codelounge.commandline.Parser;
-import ch.usi.si.codelounge.excel.ExcelParser;
+import ch.usi.si.codelounge.excel.Parser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -15,7 +14,7 @@ class ParserManager {
 
   void parse(String[] commandlineArgs) {
 
-    Parser cmdParser = new Parser();
+    ch.usi.si.codelounge.commandline.Parser cmdParser = new ch.usi.si.codelounge.commandline.Parser();
     ParsedLine line = cmdParser.parse(commandlineArgs);
 
     LOGGER.info(line);
@@ -26,7 +25,7 @@ class ParserManager {
       return;
     }
 
-    ExcelParser excelParser = new ExcelParser();
+    Parser excelParser = new Parser();
     try {
       excelParser.parse(line);
     } catch (IOException | InvalidFormatException e) {
