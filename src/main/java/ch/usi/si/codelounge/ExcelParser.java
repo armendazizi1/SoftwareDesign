@@ -84,7 +84,7 @@ public class ExcelParser {
 
         for (Ptg value : ptgs) {
             if (isRangeRef(value)) {
-                addRangedependantCells(sheet, (AreaPtg) value);
+                addRangedCells(sheet, (AreaPtg) value);
                 continue;
             }
 
@@ -113,7 +113,7 @@ public class ExcelParser {
         addSingleRef(cellName, sheetName);
     }
 
-    private static void addRangedependantCells(Sheet sheet, AreaPtg value) {
+    private static void addRangedCells(Sheet sheet, AreaPtg value) {
         List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
         rangeDependentCells.forEach(ExcelParser::addNotVisitedCell);
     }
