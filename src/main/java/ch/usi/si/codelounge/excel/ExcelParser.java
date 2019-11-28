@@ -2,6 +2,7 @@ package ch.usi.si.codelounge.excel;
 
 
 import ch.usi.si.codelounge.commandline.ParsedLine;
+import ch.usi.si.codelounge.util.UniqueStack;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.FormulaParser;
@@ -43,8 +44,14 @@ public class ExcelParser {
     /**
      * The program traverses a cell only once, so we need to keep track which cell we have visited and not visited.
      */
-    private final HashSet<ParserCell> notVisited = new LinkedHashSet<>();
-    private final HashSet<ParserCell> visited = new LinkedHashSet<>();
+    private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
+    private final HashSet<ParserCell> visited = new LinkedHashSet<>(); // TODO: get rid of visited hashset
+
+    private int getAndIncrementCellOutputCounter() {
+        int old = cellOutputCounter;
+        cellOutputCounter++;
+        return old;
+    }
 
     /**
      * This method is used to traverse a cell.
@@ -60,7 +67,7 @@ public class ExcelParser {
         Cell cell = row.getCell(cellReference.getCol());
 
         visited.add(parserCell);
-        LOGGER.log(System.Logger.Level.INFO, (cellOutputCounter++) + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
+        LOGGER.log(System.Logger.Level.INFO, getAndIncrementCellOutputCounter() + ": " + parserCell.getSheetName() + "\t" + parserCell.getCellName() + "= " + cell);
 
         if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
             return;
@@ -100,6 +107,7 @@ public class ExcelParser {
     }
 
     private String transformSheetName(String sheetName) {
+        // TODO: Armend can you add a comment what this does?
         if (sheetName.charAt(0) == '\'') {
             return sheetName.substring(1, sheetName.length() - 1);
         }
@@ -117,7 +125,7 @@ public class ExcelParser {
      */
     private void addNotVisitedCell(ParserCell cell) {
         if (!visited.contains(cell)) {
-            notVisited.add(cell);
+            notVisited.push(cell);
         }
     }
 
@@ -171,7 +179,7 @@ public class ExcelParser {
             Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
         */
         while (!notVisited.isEmpty()) {
-            ParserCell cellToParse = notVisited. get(notVisited.size() - 1);
+            ParserCell cellToParse = notVisited.last();
             traverseCell(workbook, cellToParse);
             notVisited.remove(cellToParse);
         }
