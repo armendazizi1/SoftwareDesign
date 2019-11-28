@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 
 public class ExcelParser {
 
-    private  System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+    private System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
 
     /**
      * counts the number of cells traversed
@@ -101,11 +101,11 @@ public class ExcelParser {
         }
     }
 
-    private  void addSingleRef(String s, String sheetName) {
+    private void addSingleRef(String s, String sheetName) {
         addNotVisitedCell(new ParserCell(s, sheetName));
     }
 
-    private  void addRefCells(Ptg value) {
+    private void addRefCells(Ptg value) {
         StringTokenizer tokenizer = new StringTokenizer(value.toFormulaString(), "!");
         String sheetName = tokenizer.nextToken();
         String cellName = tokenizer.nextToken();
@@ -115,7 +115,7 @@ public class ExcelParser {
         addSingleRef(cellName, sheetName);
     }
 
-    private  void addRangedCells(Sheet sheet, AreaPtg value) {
+    private void addRangedCells(Sheet sheet, AreaPtg value) {
         List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
         rangeDependentCells.forEach(this::addNotVisitedCell);
     }
@@ -131,39 +131,37 @@ public class ExcelParser {
     }
 
     // Check if token takes in a String representation of a cell reference
-    private  boolean isSingleRef(Ptg ptg) {
+    private boolean isSingleRef(Ptg ptg) {
         return ptg instanceof RefPtg;
     }
 
     // Check if token defines a cell in an external or different sheet.
-    private  boolean isRefWithSheet(Ptg ptg) {
+    private boolean isRefWithSheet(Ptg ptg) {
         return ptg instanceof Ref3DPxg;
     }
 
     // Check if token contains structured reference. e.g SUM(A1:B4)
-    private  boolean isRangeRef(Ptg ptg) {
+    private boolean isRangeRef(Ptg ptg) {
         return ptg instanceof AreaPtg;
     }
 
     /**
      * This method is used to Parse a structured reference.
-     * example cell = SUM(A1:B4) will be parsed to: A1,A2,A3,A4,B1,
-     * B2,B3,B4
+     * example cell = SUM(A1:B4) will be parsed to: A1,A2,A3,A4,B1,B2,B3,B4
      *
      * @return List of cells from the range.
      */
 
-     private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
+    private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
         List<ParserCell> cells = new ArrayList<>();
 
         CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
-
-         IntStream.rangeClosed(region.getFirstRow(), region.getLastRow()).mapToObj(sheet::getRow).forEach(ro -> {
-             IntStream stream = IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn());
-             stream.mapToObj(ro::getCell)
-                 .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
-                 .forEach(cells::add);
-         });
+        IntStream.rangeClosed(region.getFirstRow(), region.getLastRow()).mapToObj(sheet::getRow).forEach(ro -> {
+            IntStream stream = IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn());
+            stream.mapToObj(ro::getCell)
+                .map(regionCell -> new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
+                .forEach(cells::add);
+        });
 
         return cells;
     }
