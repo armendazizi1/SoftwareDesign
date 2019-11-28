@@ -9,28 +9,26 @@ import java.io.IOException;
 
 class ParserManager {
 
-    private static System.Logger LOGGER = System.getLogger(ParserManager.class.getName());
+  private static System.Logger LOGGER = System.getLogger(ParserManager.class.getName());
 
-    void parse(String[] commandlineArgs) {
+  void parse(String[] commandlineArgs) {
 
-        Parser cmdParser = new Parser();
-        ParsedLine line = cmdParser.parse(commandlineArgs);
+    Parser cmdParser = new Parser();
+    ParsedLine line = cmdParser.parse(commandlineArgs);
 
-        LOGGER.log(System.Logger.Level.INFO, line);
+    LOGGER.log(System.Logger.Level.INFO, line);
 
-        if (line.hasError()) {
-            LOGGER.log(System.Logger.Level.ERROR, "Could not parse command line arguments");
-            LOGGER.log(System.Logger.Level.INFO, line.getHelpMsg());
-            return;
-        }
-
-        ExcelParser excelParser = new ExcelParser();
-        try {
-            excelParser.parse(line);
-        } catch (IOException | InvalidFormatException e) {
-            LOGGER.log(System.Logger.Level.ERROR, e.getMessage());
-        }
-
+    if (line.hasError()) {
+      LOGGER.log(System.Logger.Level.ERROR, "Could not parse command line arguments");
+      LOGGER.log(System.Logger.Level.INFO, line.getHelpMsg());
+      return;
     }
 
+    ExcelParser excelParser = new ExcelParser();
+    try {
+      excelParser.parse(line);
+    } catch (IOException | InvalidFormatException e) {
+      LOGGER.log(System.Logger.Level.ERROR, e.getMessage());
+    }
+  }
 }
