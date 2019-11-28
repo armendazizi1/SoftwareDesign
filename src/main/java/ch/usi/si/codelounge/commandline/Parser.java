@@ -14,15 +14,15 @@ public class Parser {
             .addOption("c", "cellname", true, "Name of the cell");
 
         CommandLineParser gnuParser = new GnuParser();
-        CommandLine cmd = null;
+        CommandLine cmd;
 
         try {
             cmd = gnuParser.parse(gnuOptions, args);
         } catch (ParseException e) {
             e.printStackTrace();
-            return new ParsedLine(StringUtil.EMPTY, StringUtil.EMPTY, StringUtil.EMPTY);
+            return new ParsedLine(StringUtil.EMPTY, StringUtil.EMPTY, StringUtil.EMPTY, gnuOptions.toString());
         }
 
-        return new ParsedLine(cmd.getOptionValue("f"), cmd.getOptionValue("s"), cmd.getOptionValue("c"));
+        return new ParsedLine(cmd.getOptionValue("f"), cmd.getOptionValue("s"), cmd.getOptionValue("c"), gnuOptions.toString());
     }
 }
