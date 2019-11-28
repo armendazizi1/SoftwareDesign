@@ -36,10 +36,9 @@ public class ExcelParser {
    * not visited.
    */
   private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
-
   private final HashSet<ParserCell> visited =
       new LinkedHashSet<>(); // TODO: get rid of visited hashset
-  private System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
 
   // counts the number of cells traversed
   private int cellOutputCounter = 1;
@@ -127,7 +126,7 @@ public class ExcelParser {
     rangeDependentCells.forEach(this::addNotVisitedCell);
   }
 
-  /** Add cell to the not Visited list only if it has not been visited before. */
+  // Add cell to the not Visited list only if it has not been visited before.
   private void addNotVisitedCell(ParserCell cell) {
     if (!visited.contains(cell)) {
       notVisited.push(cell);
@@ -183,9 +182,7 @@ public class ExcelParser {
     printInfo(workbook, initialCell);
     addNotVisitedCell(initialCell);
 
-    /*
-        Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
-    */
+    // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
     while (!notVisited.isEmpty()) {
       ParserCell cellToParse = notVisited.last();
       traverseCell(workbook, cellToParse);
