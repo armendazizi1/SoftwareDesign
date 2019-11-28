@@ -66,9 +66,11 @@ public class ExcelParser {
             return;
         }
 
-        /*
-          The FormulaParsingWorkbook class parses a formula string into a List of tokens in RPN order.
-         */
+        addReferences(workbook, cell, sheet);
+    }
+
+    private void addReferences(Workbook workbook, Cell cell, Sheet sheet) {
+         // The FormulaParsingWorkbook class parses a formula string into a List of tokens in RPN order.
         FormulaParsingWorkbook fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
 
         // Parse a formula into an array of tokens
