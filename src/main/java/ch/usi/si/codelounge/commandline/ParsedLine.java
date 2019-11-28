@@ -17,9 +17,9 @@ public class ParsedLine {
   }
 
   public boolean hasError() {
-    return StringUtil.isNotEmpty(getFilepath())
-        && StringUtil.isNotEmpty(getSheetName())
-        && StringUtil.isNotEmpty(getCellName());
+    return !(StringUtil.isNotEmpty(getFilepath())
+        || StringUtil.isNotEmpty(getSheetName())
+        || StringUtil.isNotEmpty(getCellName()));
   }
 
   public String getFilepath() {

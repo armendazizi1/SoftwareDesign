@@ -2,6 +2,8 @@ package ch.usi.si.codelounge.excel;
 
 import ch.usi.si.codelounge.commandline.ParsedLine;
 import ch.usi.si.codelounge.util.UniqueStack;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.FormulaParser;
@@ -33,12 +35,16 @@ public class ExcelParser {
 
   /**
    * The program traverses a cell only once, so we need to keep track which cell we have visited and
-   * not visited.
+   * not visited.«
    */
   private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
+
   private final HashSet<ParserCell> visited =
       new LinkedHashSet<>(); // TODO: get rid of visited hashset
-  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+
+  //  TODO: only java 9 :( can we upgrade?
+  //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
+  private final Logger LOGGER = LogManager.getLogger(ExcelParser.class.getName());
 
   // counts the number of cells traversed
   private int cellOutputCounter = 1;
@@ -64,8 +70,7 @@ public class ExcelParser {
     Cell cell = row.getCell(cellReference.getCol());
 
     visited.add(parserCell);
-    LOGGER.log(
-        System.Logger.Level.INFO,
+    LOGGER.info(
         getAndIncrementCellOutputCounter()
             + ": "
             + parserCell.getSheetName()
@@ -191,11 +196,10 @@ public class ExcelParser {
   }
 
   private void printInfo(Workbook workbook, ParserCell initialCell) {
-    LOGGER.log(
-        System.Logger.Level.INFO, "Workbook has " + workbook.getNumberOfSheets() + " Sheets");
+    LOGGER.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
 
     for (Sheet sheets : workbook) {
-      LOGGER.log(System.Logger.Level.INFO, "=> " + sheets.getSheetName());
+      LOGGER.info("=> " + sheets.getSheetName());
     }
 
     System.out.println("Starting cell name " + initialCell.toString());
