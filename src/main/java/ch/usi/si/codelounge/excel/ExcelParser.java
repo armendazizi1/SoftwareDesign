@@ -74,31 +74,22 @@ public class ExcelParser {
         }
 
         /*
-          The FormulaParsingWorkbook class parses a formula string into a
-          List of tokens in RPN order.
+          The FormulaParsingWorkbook class parses a formula string into a List of tokens in RPN order.
          */
-        final FormulaParsingWorkbook fpb;
-        fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
+        FormulaParsingWorkbook fpb = XSSFEvaluationWorkbook.create((XSSFWorkbook) workbook);
 
         // Parse a formula into an array of tokens
-        final int sheetIndex = 0;
-        Ptg[] ptgs = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, sheetIndex);
+        Ptg[] ptgs = FormulaParser.parse(cell.getCellFormula(), fpb, FormulaType.NAMEDRANGE, 0);
 
-        for (Ptg value : ptgs) {
+        Arrays.stream(ptgs).forEach(value -> {
             if (isRangeRef(value)) {
                 addRangedCells(sheet, (AreaPtg) value);
-                continue;
-            }
-
-            if (isRefWithSheet(value)) {
+            } else if (isRefWithSheet(value)) {
                 addRefCells(value);
-                continue;
-            }
-
-            if (isSingleRef(value)) {
+            } else if (isSingleRef(value)) {
                 addSingleRef(value.toFormulaString(), sheet.getSheetName());
             }
-        }
+        });
     }
 
     private void addSingleRef(String s, String sheetName) {
