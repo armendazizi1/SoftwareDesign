@@ -3,7 +3,6 @@ import ch.usi.si.codelounge.util.StringUtil;
 
 public class ParsedLine {
 
-
     private final String filepath;
     private final String sheetName;
     private final String cellName;

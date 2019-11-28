@@ -1,7 +1,7 @@
 package ch.usi.si.codelounge.excel;
 
 
-import org.apache.commons.cli.*;
+import ch.usi.si.codelounge.commandline.ParsedLine;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.FormulaParser;
@@ -25,12 +25,14 @@ import java.util.*;
  * given a cell of an excel sheet traverses the whole cell tree
  * and outputs the content of the cells it found.
  *
- * @author  Gloria Sassone, Armend Azizi
+ * @author Gloria Sassone, Armend Azizi
  * @version 1.0
- * @since   December 2018
+ * @since December 2018
  */
 
 public class ExcelParser {
+
+    private static System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
 
     /**
      * counts the number of cells traversed
@@ -41,7 +43,6 @@ public class ExcelParser {
      * The program traverses a cell only once,
      * so we need to keep track which cell
      * we have visited and not visited.
-     *
      */
     private static ArrayList<ParserCell> notVisited = new ArrayList<>();
     private static HashSet<ParserCell> visited = new LinkedHashSet<>();
@@ -49,14 +50,15 @@ public class ExcelParser {
 
     /**
      * This method is used to traverse a cell.
-     * @param workbook This is the first parameter to traverseCell method
-     * @param parserCell  This is the second parameter to traverseCell method composed of
-     *                    a sheetName and cellName
+     *
+     * @param workbook   This is the first parameter to traverseCell method
+     * @param parserCell This is the second parameter to traverseCell method composed of
+     *                   a sheetName and cellName
      * @return Nothing.
      */
 
     public static void traverseCell(Workbook workbook, ParserCell parserCell) {
-       // Create a cell ref from a string representation.
+        // Create a cell ref from a string representation.
         CellReference cellReference = new CellReference(parserCell.getCellName());
         Sheet sheet = workbook.getSheet(parserCell.getSheetName());
         Row row = sheet.getRow(cellReference.getRow());
@@ -122,7 +124,6 @@ public class ExcelParser {
     /**
      * Add cell to the not Visited list
      * only if it has not been visited before.
-     *
      */
     public static void addNotVisitedCell(ParserCell cell) {
         if (!visited.contains(cell) && !notVisited.contains(cell)) {
@@ -145,15 +146,15 @@ public class ExcelParser {
 
     // Check if token contains structured reference. e.g SUM(A1:B4)
     private static boolean isRangeRef(Ptg ptg) {
-        return ptg instanceof  AreaPtg;
+        return ptg instanceof AreaPtg;
     }
-
 
 
     /**
      * This method is used to Parse a structured reference.
      * example cell = SUM(A1:B4) will be parsed to: A1,A2,A3,A4,B1,
      * B2,B3,B4
+     *
      * @return List of cells from the range.
      */
 
@@ -174,70 +175,33 @@ public class ExcelParser {
         return cells;
     }
 
-    public void parse() {
+    public void parse(ParsedLine parsedLine) throws IOException, InvalidFormatException {
 
+        Workbook workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
+        Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
+        ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
 
-
-
-        String excelFilePath = "";
-
-
-
-        // A formatter of help messages for command line options.
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("ExcelParser", gnuOptions);
-
-        if (cmd.hasOption("f")) {
-            System.out.println("file path passed: " + cmd.getOptionValue("f"));
-            excelFilePath = cmd.getOptionValue("f");
-        }
-
-        Workbook workbook = WorkbookFactory.create(new File(excelFilePath));
-
-
-        String sheetName = "";
-        if (cmd.hasOption("s")) {
-            System.out.println("sheet name passed: " + cmd.getOptionValue("s"));
-            sheetName = cmd.getOptionValue("s");
-        }
-
-        // Getting the Sheet by its name
-        Sheet sheet = workbook.getSheet(sheetName);
-
-        String cellName = "";
-        if (cmd.hasOption("c")) {
-            System.out.println("cell name passed: " + cmd.getOptionValue("c"));
-            cellName = cmd.getOptionValue("c");
-        }
-
-
-        // Retrieving the number of sheets in the Workbook
-        System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
-
-        System.out.println("Retrieving Sheets using for-each loop");
-        for (Sheet sheets : workbook) {
-            System.out.println("=> " + sheets.getSheetName());
-        }
-
-
-        ParserCell initialCell = new ParserCell(cellName, sheet.getSheetName());
+        printInfo(workbook, initialCell);
         addNotVisitedCell(initialCell);
 
+        /*
+            Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
+        */
+        while (!notVisited.isEmpty()) {
+            ParserCell parserCell = notVisited.get(notVisited.size() - 1);
+            traverseCell(workbook, parserCell);
+            notVisited.remove(parserCell);
+        }
+
+    }
+
+    private void printInfo(Workbook workbook, ParserCell initialCell) {
+        LOGGER.log(System.Logger.Level.INFO, "Workbook has " + workbook.getNumberOfSheets() + " Sheets");
+
+        for (Sheet sheets : workbook) {
+            LOGGER.log(System.Logger.Level.INFO, "=> " + sheets.getSheetName());
+        }
 
         System.out.println("Starting cell name " + initialCell.toString());
-
-            /**
-             * Starting from the given cell (e.g "A")
-             * start traversing all the cells that
-             * cell A depends on.
-             *
-             */
-            while (!notVisited.isEmpty()) {
-                ParserCell parserCell = notVisited.get(notVisited.size() - 1);
-                traverseCell(workbook, parserCell);
-                notVisited.remove(parserCell);
-            }
-
-//          TODO:  workbook.close(); should be called?? but modifies file somehow..
-        }
+    }
 }
