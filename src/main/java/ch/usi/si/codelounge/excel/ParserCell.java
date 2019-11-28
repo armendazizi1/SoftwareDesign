@@ -1,4 +1,4 @@
-package ch.usi.si.codelounge;
+package ch.usi.si.codelounge.excel;
 
 /**
  * The ParserCell class represents a cell

@@ -27,7 +27,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>ch.usi.si.codelounge.ExcelParser</mainClass>
+              <mainClass>ch.usi.si.codelounge.excel.ExcelParser</mainClass>
             </manifest>
           </archive>
         </configuration>
