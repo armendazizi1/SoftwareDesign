@@ -1,18 +1,16 @@
 package ch.usi.si.codelounge;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 public class IOTestHelper {
-  private final PrintStream systemOut = System.out;
+  private static final PrintStream systemOut = System.out;
 
-  private ByteArrayInputStream testIn;
   private ByteArrayOutputStream testOut;
 
   IOTestHelper() {
     testOut = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(testOut));
+    System.setOut(new PrintStream(testOut, true));
   }
 
   public void restoreSystemInputOutput() {

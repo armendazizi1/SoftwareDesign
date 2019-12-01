@@ -4,6 +4,8 @@ import java.io.File;
 
 public class InputTestHelper {
 
+  private InputTestHelper() {}
+
   public static String[] generate(String filename, String sheet, String cell) {
     // maven automatically sets the current directory
     String filepath = new File("src/test/data/" + filename).getAbsolutePath();

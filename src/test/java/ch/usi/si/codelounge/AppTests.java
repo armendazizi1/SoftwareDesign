@@ -21,19 +21,6 @@ public class AppTests {
     ioTestHelper = new IOTestHelper();
   }
 
-  //// This test can not be executed with the other ones together. Don't know why...
-  //    @Test
-  //    public void shouldOutputValue() throws IOException, ParseException, InvalidFormatException {
-  //        // arrange
-  //        String[] input = InputTestHelper.generate("C10");
-  //
-  //        // act
-  //        ExcelParser.main(input);
-  //
-  //        // assert
-  //        assertThat(ioTestHelper.getOutput()).contains("C10= 1");
-  //    }
-
   @Test
   public void shouldOutputText() throws ParseException, InvalidFormatException, IOException {
     // arrange

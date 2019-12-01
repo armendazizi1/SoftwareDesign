@@ -31,23 +31,24 @@ import java.util.stream.IntStream;
  * @version 1.0
  * @since December 2018
  */
-public class Parser {
+public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
 
   /**
    * The program traverses a cell only once, so we need to keep track which cell we have visited and
    * not visited.«
    */
-  private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
+  private final UniqueStack<ExcelCell> notVisited = new UniqueStack<>();
 
-  private final HashSet<ParserCell> visited =
-      new LinkedHashSet<>(); // TODO: get rid of visited hashset
+  private final HashSet<ExcelCell> visited = new LinkedHashSet<>();
 
-  //  TODO: only java 9 :( can we upgrade?
-  //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
-  private final Logger LOGGER = LogManager.getLogger(Parser.class.getName());
-
+  private final Logger logger = LogManager.getLogger(ExcelParser.class.getName());
+  private final ParsedLine parsedLine;
   // counts the number of cells traversed
   private int cellOutputCounter = 1;
+
+  public ExcelParser(ParsedLine parsedLine) {
+    this.parsedLine = parsedLine;
+  }
 
   private int getAndIncrementCellOutputCounter() {
     int old = cellOutputCounter;
@@ -62,7 +63,7 @@ public class Parser {
    * @param parserCell This is the second parameter to traverseCell method composed of a sheetName
    *     and cellName
    */
-  private void traverseCell(Workbook workbook, ParserCell parserCell) {
+  private void traverseCell(Workbook workbook, ExcelCell parserCell) {
     // Create a cell ref from a string representation.
     CellReference cellReference = new CellReference(parserCell.getCellName());
     Sheet sheet = workbook.getSheet(parserCell.getSheetName());
@@ -70,7 +71,7 @@ public class Parser {
     Cell cell = row.getCell(cellReference.getCol());
 
     visited.add(parserCell);
-    LOGGER.info(
+    logger.info(
         getAndIncrementCellOutputCounter()
             + ": "
             + parserCell.getSheetName()
@@ -107,7 +108,7 @@ public class Parser {
   }
 
   private void addSingleRef(String s, String sheetName) {
-    addNotVisitedCell(new ParserCell(s, sheetName));
+    addNotVisitedCell(new ExcelCell(s, sheetName));
   }
 
   private void addRefCells(Ptg value) {
@@ -119,8 +120,8 @@ public class Parser {
   }
 
   private String transformSheetName(String sheetName) {
-     // External excel sheetNames start with a '\' and end with the '!' symbol, we ignore both
-      // since we need only the name of that sheet.
+    // External excel sheetNames start with a '\' and end with the '!' symbol, we ignore both
+    // since we need only the name of that sheet.
     if (sheetName.charAt(0) == '\'') {
       return sheetName.substring(1, sheetName.length() - 1);
     }
@@ -128,12 +129,12 @@ public class Parser {
   }
 
   private void addRangedCells(Sheet sheet, AreaPtg value) {
-    List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
+    List<ExcelCell> rangeDependentCells = parseCellRange(sheet, value);
     rangeDependentCells.forEach(this::addNotVisitedCell);
   }
 
   // Add cell to the not Visited list only if it has not been visited before.
-  private void addNotVisitedCell(ParserCell cell) {
+  private void addNotVisitedCell(ExcelCell cell) {
     if (!visited.contains(cell)) {
       notVisited.push(cell);
     }
@@ -160,49 +161,58 @@ public class Parser {
    *
    * @return List of cells from the range.
    */
-  private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
-    List<ParserCell> cells = new ArrayList<>();
+  private List<ExcelCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
+    List<ExcelCell> cells = new ArrayList<>();
     CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
 
     IntStream.rangeClosed(region.getFirstRow(), region.getLastRow())
         .mapToObj(sheet::getRow)
         .forEach(
-            ro -> {
-              IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
-                  .mapToObj(ro::getCell)
-                  .map(
-                      regionCell ->
-                          new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
-                  .forEach(cells::add);
-            });
+            ro ->
+                IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
+                    .mapToObj(ro::getCell)
+                    .map(
+                        regionCell ->
+                            new ExcelCell(regionCell.getAddress().toString(), sheet.getSheetName()))
+                    .forEach(cells::add));
 
     return cells;
   }
 
-  public void parse(ParsedLine parsedLine) throws IOException, InvalidFormatException {
+  private void printInfo(Workbook workbook, ExcelCell initialCell) {
+    logger.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
 
-    Workbook workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
+    for (Sheet sheets : workbook) {
+      logger.info("=> " + sheets.getSheetName());
+    }
+
+    logger.info("Starting cell name " + initialCell.toString());
+  }
+
+  @Override
+  public Boolean tryParse() {
+    Workbook workbook = null;
+
+    try {
+      workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
+    } catch (IOException | InvalidFormatException e) {
+      logger.error(e.getMessage());
+      return false;
+    }
+
     Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
-    ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
+    ExcelCell initialCell = new ExcelCell(parsedLine.getCellName(), sheet.getSheetName());
 
     printInfo(workbook, initialCell);
     addNotVisitedCell(initialCell);
 
     // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
     while (!notVisited.isEmpty()) {
-      ParserCell cellToParse = notVisited.last();
+      ExcelCell cellToParse = notVisited.peek();
       traverseCell(workbook, cellToParse);
       notVisited.remove(cellToParse);
     }
-  }
 
-  private void printInfo(Workbook workbook, ParserCell initialCell) {
-    LOGGER.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
-
-    for (Sheet sheets : workbook) {
-      LOGGER.info("=> " + sheets.getSheetName());
-    }
-
-    System.out.println("Starting cell name " + initialCell.toString());
+    return true;
   }
 }

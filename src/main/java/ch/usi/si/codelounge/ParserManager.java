@@ -1,35 +1,33 @@
 package ch.usi.si.codelounge;
 
+import ch.usi.si.codelounge.commandline.CommandLineParser;
 import ch.usi.si.codelounge.commandline.ParsedLine;
-import ch.usi.si.codelounge.excel.Parser;
+import ch.usi.si.codelounge.excel.ExcelParser;
+import ch.usi.si.codelounge.util.Parser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import java.io.IOException;
+public class ParserManager implements Parser<Boolean> {
 
-class ParserManager {
+  private static Logger logger = LogManager.getLogger(ParserManager.class.getName());
+  private final Parser<ParsedLine> cmdParser;
 
-  private static Logger LOGGER = LogManager.getLogger(ParserManager.class.getName());
+  public ParserManager(String[] commandlineArgs) {
+    cmdParser = new CommandLineParser(commandlineArgs);
+  }
 
-  void parse(String[] commandlineArgs) {
+  public Boolean tryParse() {
+    ParsedLine line = cmdParser.tryParse();
 
-    ch.usi.si.codelounge.commandline.Parser cmdParser = new ch.usi.si.codelounge.commandline.Parser();
-    ParsedLine line = cmdParser.parse(commandlineArgs);
-
-    LOGGER.info(line);
+    logger.info(line);
 
     if (line.hasError()) {
-      LOGGER.error("Could not parse command line arguments");
-      LOGGER.error(line.getHelpMsg());
-      return;
+      logger.error("Could not parse command line arguments");
+      logger.error(line.getHelpMsg());
+      return false;
     }
 
-    Parser excelParser = new Parser();
-    try {
-      excelParser.parse(line);
-    } catch (IOException | InvalidFormatException e) {
-      LOGGER.error(e.getMessage());
-    }
+    Parser<Boolean> excelParser = new ExcelParser(line);
+    return excelParser.tryParse();
   }
 }
