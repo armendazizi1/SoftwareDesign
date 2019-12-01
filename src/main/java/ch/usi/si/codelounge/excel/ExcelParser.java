@@ -40,7 +40,7 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
 
   private final HashSet<ParserCell> visited =
-      new LinkedHashSet<>(); // TODO: get rid of visited hashset
+      new LinkedHashSet<>();
 
   private final Logger logger = LogManager.getLogger(ExcelParser.class.getName());
   private final ParsedLine parsedLine;
