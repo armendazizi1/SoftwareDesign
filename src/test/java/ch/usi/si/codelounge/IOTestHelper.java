@@ -10,7 +10,7 @@ public class IOTestHelper {
 
   IOTestHelper() {
     testOut = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(testOut));
+    System.setOut(new PrintStream(testOut, true));
   }
 
   public void restoreSystemInputOutput() {
