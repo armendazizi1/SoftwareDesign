@@ -119,7 +119,8 @@ public class Parser {
   }
 
   private String transformSheetName(String sheetName) {
-    // TODO: Armend can you add a comment what this does?
+     // External excel sheetNames start with a '\' and end with the '!' symbol, we ignore both
+      // since we need only the name of that sheet.
     if (sheetName.charAt(0) == '\'') {
       return sheetName.substring(1, sheetName.length() - 1);
     }
