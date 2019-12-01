@@ -6,11 +6,11 @@ package ch.usi.si.codelounge.excel;
  * @author Gloria Sassone, Armend Azizi
  * @since December 2018
  */
-class ParserCell {
+public class ExcelCell {
   private String cellName;
   private String sheetName;
 
-  public ParserCell(String cellName, String sheetName) {
+  public ExcelCell(String cellName, String sheetName) {
     super();
     this.cellName = cellName.replace("$", "");
     this.sheetName = sheetName;
@@ -29,7 +29,7 @@ class ParserCell {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    ParserCell that = (ParserCell) o;
+    ExcelCell that = (ExcelCell) o;
 
     if (!getCellName().equals(that.getCellName())) return false;
     return getSheetName().equals(that.getSheetName());

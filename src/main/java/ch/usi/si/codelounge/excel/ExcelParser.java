@@ -37,10 +37,9 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
    * The program traverses a cell only once, so we need to keep track which cell we have visited and
    * not visited.«
    */
-  private final UniqueStack<ParserCell> notVisited = new UniqueStack<>();
+  private final UniqueStack<ExcelCell> notVisited = new UniqueStack<>();
 
-  private final HashSet<ParserCell> visited =
-      new LinkedHashSet<>();
+  private final HashSet<ExcelCell> visited = new LinkedHashSet<>();
 
   private final Logger logger = LogManager.getLogger(ExcelParser.class.getName());
   private final ParsedLine parsedLine;
@@ -64,7 +63,7 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
    * @param parserCell This is the second parameter to traverseCell method composed of a sheetName
    *     and cellName
    */
-  private void traverseCell(Workbook workbook, ParserCell parserCell) {
+  private void traverseCell(Workbook workbook, ExcelCell parserCell) {
     // Create a cell ref from a string representation.
     CellReference cellReference = new CellReference(parserCell.getCellName());
     Sheet sheet = workbook.getSheet(parserCell.getSheetName());
@@ -109,7 +108,7 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   }
 
   private void addSingleRef(String s, String sheetName) {
-    addNotVisitedCell(new ParserCell(s, sheetName));
+    addNotVisitedCell(new ExcelCell(s, sheetName));
   }
 
   private void addRefCells(Ptg value) {
@@ -130,12 +129,12 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   }
 
   private void addRangedCells(Sheet sheet, AreaPtg value) {
-    List<ParserCell> rangeDependentCells = parseCellRange(sheet, value);
+    List<ExcelCell> rangeDependentCells = parseCellRange(sheet, value);
     rangeDependentCells.forEach(this::addNotVisitedCell);
   }
 
   // Add cell to the not Visited list only if it has not been visited before.
-  private void addNotVisitedCell(ParserCell cell) {
+  private void addNotVisitedCell(ExcelCell cell) {
     if (!visited.contains(cell)) {
       notVisited.push(cell);
     }
@@ -162,8 +161,8 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
    *
    * @return List of cells from the range.
    */
-  private List<ParserCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
-    List<ParserCell> cells = new ArrayList<>();
+  private List<ExcelCell> parseCellRange(Sheet sheet, AreaPtg areaPtg) {
+    List<ExcelCell> cells = new ArrayList<>();
     CellRangeAddress region = CellRangeAddress.valueOf(areaPtg.toFormulaString());
 
     IntStream.rangeClosed(region.getFirstRow(), region.getLastRow())
@@ -174,14 +173,13 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
                     .mapToObj(ro::getCell)
                     .map(
                         regionCell ->
-                            new ParserCell(
-                                regionCell.getAddress().toString(), sheet.getSheetName()))
+                            new ExcelCell(regionCell.getAddress().toString(), sheet.getSheetName()))
                     .forEach(cells::add));
 
     return cells;
   }
 
-  private void printInfo(Workbook workbook, ParserCell initialCell) {
+  private void printInfo(Workbook workbook, ExcelCell initialCell) {
     logger.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
 
     for (Sheet sheets : workbook) {
@@ -203,14 +201,14 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
     }
 
     Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
-    ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
+    ExcelCell initialCell = new ExcelCell(parsedLine.getCellName(), sheet.getSheetName());
 
     printInfo(workbook, initialCell);
     addNotVisitedCell(initialCell);
 
     // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
     while (!notVisited.isEmpty()) {
-      ParserCell cellToParse = notVisited.last();
+      ExcelCell cellToParse = notVisited.last();
       traverseCell(workbook, cellToParse);
       notVisited.remove(cellToParse);
     }
