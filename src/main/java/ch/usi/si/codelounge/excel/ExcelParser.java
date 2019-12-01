@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
  * @version 1.0
  * @since December 2018
  */
-public class Parser {
+public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
 
   /**
    * The program traverses a cell only once, so we need to keep track which cell we have visited and
@@ -44,7 +44,14 @@ public class Parser {
 
   //  TODO: only java 9 :( can we upgrade?
   //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
-  private final Logger LOGGER = LogManager.getLogger(Parser.class.getName());
+  private final Logger LOGGER = LogManager.getLogger(ExcelParser.class.getName());
+  private final ParsedLine parsedLine;
+
+
+  public ExcelParser(ParsedLine parsedLine) {
+      this.parsedLine = parsedLine;
+  }
+
 
   // counts the number of cells traversed
   private int cellOutputCounter = 1;
@@ -179,23 +186,6 @@ public class Parser {
     return cells;
   }
 
-  public void parse(ParsedLine parsedLine) throws IOException, InvalidFormatException {
-
-    Workbook workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
-    Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
-    ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
-
-    printInfo(workbook, initialCell);
-    addNotVisitedCell(initialCell);
-
-    // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
-    while (!notVisited.isEmpty()) {
-      ParserCell cellToParse = notVisited.last();
-      traverseCell(workbook, cellToParse);
-      notVisited.remove(cellToParse);
-    }
-  }
-
   private void printInfo(Workbook workbook, ParserCell initialCell) {
     LOGGER.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
 
@@ -203,6 +193,33 @@ public class Parser {
       LOGGER.info("=> " + sheets.getSheetName());
     }
 
-    System.out.println("Starting cell name " + initialCell.toString());
+    LOGGER.info("Starting cell name " + initialCell.toString());
   }
+
+    @Override
+    public Boolean tryParse()  {
+        Workbook workbook = null;
+
+        try {
+            workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
+        } catch (IOException | InvalidFormatException e) {
+            LOGGER.error(e.getMessage());
+            return false;
+        }
+
+        Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
+        ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
+
+        printInfo(workbook, initialCell);
+        addNotVisitedCell(initialCell);
+
+        // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
+        while (!notVisited.isEmpty()) {
+            ParserCell cellToParse = notVisited.last();
+            traverseCell(workbook, cellToParse);
+            notVisited.remove(cellToParse);
+        }
+
+        return true;
+    }
 }
