@@ -13,9 +13,6 @@ public class UniqueStack<T> implements Iterable<T> {
   private ArrayList<T> stack = new ArrayList<>();
   private HashSet<T> set = new HashSet<>();
 
-  /** creates an empty stack. */
-  public UniqueStack() {}
-
   /** returns true only if the element was actually added. */
   public boolean push(T t) {
     if (set.add(t)) {
