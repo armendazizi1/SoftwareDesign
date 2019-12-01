@@ -12,8 +12,8 @@ import java.util.Iterator;
  */
 public class UniqueStack<T> implements Iterable<T> {
 
-  private ArrayList<T> stack = new ArrayList<T>();
-  private HashSet<T> set = new HashSet<T>();
+  private ArrayList<T> stack = new ArrayList<>();
+  private HashSet<T> set = new HashSet<>();
 
   /** creates an empty stack. */
   public UniqueStack() {}

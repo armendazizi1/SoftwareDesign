@@ -42,8 +42,6 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   private final HashSet<ParserCell> visited =
       new LinkedHashSet<>(); // TODO: get rid of visited hashset
 
-  //  TODO: only java 9 :( can we upgrade?
-  //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
   private final Logger logger = LogManager.getLogger(ExcelParser.class.getName());
   private final ParsedLine parsedLine;
   // counts the number of cells traversed
@@ -171,14 +169,14 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
     IntStream.rangeClosed(region.getFirstRow(), region.getLastRow())
         .mapToObj(sheet::getRow)
         .forEach(
-            ro -> {
-              IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
-                  .mapToObj(ro::getCell)
-                  .map(
-                      regionCell ->
-                          new ParserCell(regionCell.getAddress().toString(), sheet.getSheetName()))
-                  .forEach(cells::add);
-            });
+            ro ->
+                IntStream.rangeClosed(region.getFirstColumn(), region.getLastColumn())
+                    .mapToObj(ro::getCell)
+                    .map(
+                        regionCell ->
+                            new ParserCell(
+                                regionCell.getAddress().toString(), sheet.getSheetName()))
+                    .forEach(cells::add));
 
     return cells;
   }
