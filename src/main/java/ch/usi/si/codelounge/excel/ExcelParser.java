@@ -44,17 +44,14 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
 
   //  TODO: only java 9 :( can we upgrade?
   //  private final System.Logger LOGGER = System.getLogger(ExcelParser.class.getName());
-  private final Logger LOGGER = LogManager.getLogger(ExcelParser.class.getName());
+  private final Logger logger = LogManager.getLogger(ExcelParser.class.getName());
   private final ParsedLine parsedLine;
-
-
-  public ExcelParser(ParsedLine parsedLine) {
-      this.parsedLine = parsedLine;
-  }
-
-
   // counts the number of cells traversed
   private int cellOutputCounter = 1;
+
+  public ExcelParser(ParsedLine parsedLine) {
+    this.parsedLine = parsedLine;
+  }
 
   private int getAndIncrementCellOutputCounter() {
     int old = cellOutputCounter;
@@ -77,7 +74,7 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
     Cell cell = row.getCell(cellReference.getCol());
 
     visited.add(parserCell);
-    LOGGER.info(
+    logger.info(
         getAndIncrementCellOutputCounter()
             + ": "
             + parserCell.getSheetName()
@@ -126,8 +123,8 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   }
 
   private String transformSheetName(String sheetName) {
-     // External excel sheetNames start with a '\' and end with the '!' symbol, we ignore both
-      // since we need only the name of that sheet.
+    // External excel sheetNames start with a '\' and end with the '!' symbol, we ignore both
+    // since we need only the name of that sheet.
     if (sheetName.charAt(0) == '\'') {
       return sheetName.substring(1, sheetName.length() - 1);
     }
@@ -187,39 +184,39 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
   }
 
   private void printInfo(Workbook workbook, ParserCell initialCell) {
-    LOGGER.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
+    logger.info("Workbook has " + workbook.getNumberOfSheets() + " Sheets");
 
     for (Sheet sheets : workbook) {
-      LOGGER.info("=> " + sheets.getSheetName());
+      logger.info("=> " + sheets.getSheetName());
     }
 
-    LOGGER.info("Starting cell name " + initialCell.toString());
+    logger.info("Starting cell name " + initialCell.toString());
   }
 
-    @Override
-    public Boolean tryParse()  {
-        Workbook workbook = null;
+  @Override
+  public Boolean tryParse() {
+    Workbook workbook = null;
 
-        try {
-            workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
-        } catch (IOException | InvalidFormatException e) {
-            LOGGER.error(e.getMessage());
-            return false;
-        }
-
-        Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
-        ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
-
-        printInfo(workbook, initialCell);
-        addNotVisitedCell(initialCell);
-
-        // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
-        while (!notVisited.isEmpty()) {
-            ParserCell cellToParse = notVisited.last();
-            traverseCell(workbook, cellToParse);
-            notVisited.remove(cellToParse);
-        }
-
-        return true;
+    try {
+      workbook = WorkbookFactory.create(new File(parsedLine.getFilepath()));
+    } catch (IOException | InvalidFormatException e) {
+      logger.error(e.getMessage());
+      return false;
     }
+
+    Sheet sheet = workbook.getSheet(parsedLine.getSheetName());
+    ParserCell initialCell = new ParserCell(parsedLine.getCellName(), sheet.getSheetName());
+
+    printInfo(workbook, initialCell);
+    addNotVisitedCell(initialCell);
+
+    // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
+    while (!notVisited.isEmpty()) {
+      ParserCell cellToParse = notVisited.last();
+      traverseCell(workbook, cellToParse);
+      notVisited.remove(cellToParse);
+    }
+
+    return true;
+  }
 }

@@ -9,21 +9,21 @@ import org.apache.logging.log4j.Logger;
 
 public class ParserManager implements Parser<Boolean> {
 
-  private static Logger LOGGER = LogManager.getLogger(ParserManager.class.getName());
-    private final Parser<ParsedLine> cmdParser;
+  private static Logger logger = LogManager.getLogger(ParserManager.class.getName());
+  private final Parser<ParsedLine> cmdParser;
 
   public ParserManager(String[] commandlineArgs) {
-      cmdParser = new CommandLineParser(commandlineArgs);
+    cmdParser = new CommandLineParser(commandlineArgs);
   }
 
   public Boolean tryParse() {
     ParsedLine line = cmdParser.tryParse();
 
-    LOGGER.info(line);
+    logger.info(line);
 
     if (line.hasError()) {
-      LOGGER.error("Could not parse command line arguments");
-      LOGGER.error(line.getHelpMsg());
+      logger.error("Could not parse command line arguments");
+      logger.error(line.getHelpMsg());
       return false;
     }
 
