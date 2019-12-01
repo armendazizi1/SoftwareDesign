@@ -30,7 +30,7 @@ public class UniqueStack<T> implements Iterable<T> {
     return stack.size();
   }
 
-  public T last() {
+  public T peek() {
     return stack.isEmpty() ? null : stack.get(stack.size() - 1);
   }
 

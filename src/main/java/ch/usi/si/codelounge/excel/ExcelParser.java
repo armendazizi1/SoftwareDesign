@@ -208,7 +208,7 @@ public class ExcelParser implements ch.usi.si.codelounge.util.Parser<Boolean> {
 
     // Starting from the given cell (e.g "A") start traversing all the cells that cell A depends on.
     while (!notVisited.isEmpty()) {
-      ExcelCell cellToParse = notVisited.last();
+      ExcelCell cellToParse = notVisited.peek();
       traverseCell(workbook, cellToParse);
       notVisited.remove(cellToParse);
     }
