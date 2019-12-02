@@ -12,6 +12,7 @@ import java.io.CharArrayWriter;
 /**
  * JUnit rule for testing output to Log4j. Handy for verifying logging. This sets up and tears down
  * an Appender resource on a given Logger.
+ * adapted from https://www.dontpanicblog.co.uk/2018/04/29/test-log4j2-with-junit/
  */
 public class LogAppenderResource extends ExternalResource {
 
