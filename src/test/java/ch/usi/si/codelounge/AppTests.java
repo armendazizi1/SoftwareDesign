@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.junit.Rule;
 import org.junit.Test;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTests {
