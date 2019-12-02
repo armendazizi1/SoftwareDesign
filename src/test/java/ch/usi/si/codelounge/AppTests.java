@@ -1,13 +1,10 @@
 package ch.usi.si.codelounge;
 
 import ch.usi.si.codelounge.excel.ExcelParser;
-import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +15,7 @@ public class AppTests {
       new LogAppenderResource(LogManager.getLogger(ExcelParser.class.getName()));
 
   @Test
-  public void shouldOutputText() throws ParseException, InvalidFormatException, IOException {
+  public void shouldOutputText() {
     // arrange
     String[] input = InputTestHelper.generate("F45");
 
@@ -30,7 +27,7 @@ public class AppTests {
   }
 
   @Test
-  public void shouldOutputSum() throws ParseException, InvalidFormatException, IOException {
+  public void shouldOutputSum() {
     // arrange
     String[] input = InputTestHelper.generate("Q42");
 
@@ -41,9 +38,8 @@ public class AppTests {
     assertThat(appender.getOutput()).contains("Q42= Q39+Q40+Q41");
   }
 
-  //
   @Test
-  public void shouldOutputFormula() throws ParseException, InvalidFormatException, IOException {
+  public void shouldOutputFormula() {
     // arrange
     String[] input = InputTestHelper.generate("G35");
 
@@ -55,8 +51,7 @@ public class AppTests {
   }
 
   @Test
-  public void shouldOutputComplexFormula()
-      throws ParseException, InvalidFormatException, IOException {
+  public void shouldOutputComplexFormula() {
     // arrange
     String[] input = InputTestHelper.generate("G10");
 
@@ -69,7 +64,7 @@ public class AppTests {
   }
 
   @Test
-  public void shouldOutputReference() throws ParseException, InvalidFormatException, IOException {
+  public void shouldOutputReference() {
     // arrange
     String[] input = InputTestHelper.generate("I39");
 
