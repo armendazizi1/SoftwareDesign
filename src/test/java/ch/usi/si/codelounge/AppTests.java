@@ -1,25 +1,21 @@
 package ch.usi.si.codelounge;
 
+import ch.usi.si.codelounge.excel.ExcelParser;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppTests {
 
-  private IOTestHelper ioTestHelper;
-
-  @Before
-  public void setupOutput() {
-    ioTestHelper = new IOTestHelper();
-  }
+  @Rule
+  public LogAppenderResource appender =
+      new LogAppenderResource(LogManager.getLogger(ExcelParser.class.getName()));
 
   @Test
   public void shouldOutputText() throws ParseException, InvalidFormatException, IOException {
@@ -30,7 +26,7 @@ public class AppTests {
     App.main(input);
 
     // assert
-    assertThat(ioTestHelper.getOutput()).contains("F45= Total Returning Customers");
+    assertThat(appender.getOutput()).contains("F45= Total Returning Customers");
   }
 
   @Test
@@ -42,7 +38,7 @@ public class AppTests {
     App.main(input);
 
     // assert
-    assertThat(ioTestHelper.getOutput()).contains("Q42= Q39+Q40+Q41");
+    assertThat(appender.getOutput()).contains("Q42= Q39+Q40+Q41");
   }
 
   //
@@ -55,7 +51,7 @@ public class AppTests {
     App.main(input);
 
     // assert
-    assertThat(ioTestHelper.getOutput()).contains("G35= SUM(G10:G34)");
+    assertThat(appender.getOutput()).contains("G35= SUM(G10:G34)");
   }
 
   @Test
@@ -68,7 +64,7 @@ public class AppTests {
     App.main(input);
 
     // assert
-    assertThat(ioTestHelper.getOutput())
+    assertThat(appender.getOutput())
         .contains("G10= IF(AND(G$8>=$C10,G$8<=$C10+$E10-1),$D10*$F10,0)");
   }
 
@@ -81,6 +77,6 @@ public class AppTests {
     App.main(input);
 
     // assert
-    assertThat(ioTestHelper.getOutput()).contains("I39= H42");
+    assertThat(appender.getOutput()).contains("I39= H42");
   }
 }
