@@ -16,7 +16,6 @@ public class ParsedLine {
     this.helpMsg = helpMsg;
   }
 
-  // TODO: rewrite
   public boolean hasError() {
     return !(StringUtil.isNotEmpty(getFilepath())
         || StringUtil.isNotEmpty(getSheetName())
